@@ -1,0 +1,8 @@
+[window]
+decorations = "full"
+opacity = 0.9
+blur = true
+dynamic_padding = true
+
+[selection]
+save_to_clipboard = true
