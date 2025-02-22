@@ -70,7 +70,7 @@
 ;; Delete selected region when typing
 (delete-selection-mode 1)
 
-; ignore case when searching
+;: ignore case when searching
 (setq cases-fold-search t)
 
 ;; Windows buffer configuration to undo confs.

@@ -23,6 +23,12 @@ HISTFILESIZE=2000
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
+export HISTTIMEFORMAT="%c "
+export HISTIGNORE="ls:history"
+
+bind '"^[[A":"history-search-backward"' # arrow up
+bind '"^[[B":"history-search-forward"' # arrow up
+
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
 #shopt -s globstar
@@ -87,24 +93,49 @@ fi
 # colored GCC warnings and errors
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-# some more ls aliases
-alias l='ls -alF --color=auto'
-alias la='ls -A'
-alias ls='ls -CF --color=auto'
-alias em='emacs &'
-alias ec='emacsclient'
-alias cd..='cd ..'
-alias cdp='cd /home/leonabil/Documents/RTOL'
-alias cdr='cd /home/leonabil/Code/RLAS'
-alias cds='cd /home/leonabil/Code/SPU_SW'
-alias leotar='tar -czvf'
-alias untar='tar -xzvf'
+
+## Dir Definition
+proDir=/home/leonabil/Documents
+rlasDir=/home/leonabil/Code/RLAS
+codeDir=/home/leonabil/Code
+
+# Aliases
 alias sshifms='sshpass -p "4BR3T3s3s4m0XXM" ssh nabil@ifms'
 alias sshttcp='sshpass -p "ttcp" ssh ttcp@ttcpd'
 alias cat='batcat --theme=Dracula'
-alias resource='source ~/.bashrc'
+alias em='emacs &'
+alias ec='emacsclient'
+alias cdp='cd $proDir'
+alias cdm='cd $rlasDir/MMI/Display'
+alias cdr='cd $rlasDir'
+alias cdc='cd $codeDir'
+alias python='python3'
+alias leotar='tar -czvd'
+alias untar='tar -xzvf'
+alias cp='cp -iv'                           # Preferred 'cp' implementation
+alias mv='mv -iv'                           # Preferred 'mv' implementation
+alias mkdir='mkdir -pv'                     # Preferred 'mkdir' implementation
+alias less='less -FSRXc'                    # Preferred 'less' implementation
+alias cd..='cd ../'                         # Go back 1 directory level (for fast typers)
+alias ..='cd ../'                           # Go back 1 directory level
+alias ...='cd ../../'                       # Go back 2 directory levels
+alias .3='cd ../../../'                     # Go back 3 directory levels
+alias .4='cd ../../../../'                  # Go back 4 directory levels
+alias .5='cd ../../../../../'               # Go back 5 directory levels
+alias .6='cd ../../../../../../'            # Go back 6 directory levels
+alias ~="cd ~"                              # ~:            Go Home
+alias c='clear'                             # c:            Clear terminal display
+alias which='type -a'                       # which:        Find executables
+alias path='echo -e ${PATH//:/\\n}'         # path:         Echo all executable Paths
+alias show_options='shopt'                  # Show_options: display bash options settings
+alias lr='ls -R | grep ":$" | sed -e '\''s/:$//'\'' -e '\''s/[^-][^\/]*\//--/g'\'' -e '\''s/^/   /'\'' -e '\''s/-/|/'\'' | less' # lr:  Full Recursive Directory Listing
+alias ttop="top -R -F -s 10 -o rsize"       # Recommended 'top' invocation to minimize resources
+alias m="meld -n"
+alias resource="source ~/.bashrc"           # Easy refresh bashrc
+alias git="git -c http.sslVerify=false"     # Avoid SSL verification when GIT
+mcd () { mkdir -p "$1" && cd "$1"; }        # mcd:          Makes new Dir and jumps inside
 
-#Adding bin to PATH
+# Adding directories to path
 export PATH=/home/$(whoami)/bin:$PATH
 
 # Add an "alert" alias for long running commands.  Use like so:
@@ -131,12 +162,96 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# FZF - fuzzy finder
+# Exa better ls
+alias l="eza --color=always --long --icons --no-user --icons --no-permissions --oneline --sort date -alh"                    # Preferred 'ls' implementation"
+
+# ZOXIDE init
+_z_cd() {
+    cd "$@" || return "$?"
+
+    if [ "$_ZO_ECHO" = "1" ]; then
+        echo "$PWD"
+    fi
+}
+
+z() {
+    if [ "$#" -eq 0 ]; then
+        _z_cd ~
+    elif [ "$#" -eq 1 ] && [ "$1" = '-' ]; then
+        if [ -n "$OLDPWD" ]; then
+            _z_cd "$OLDPWD"
+        else
+            echo 'zoxide: $OLDPWD is not set'
+            return 1
+        fi
+    else
+        _zoxide_result="$(zoxide query -- "$@")" && _z_cd "$_zoxide_result"
+    fi
+}
+
+zi() {
+    _zoxide_result="$(zoxide query -i -- "$@")" && _z_cd "$_zoxide_result"
+}
+
+alias za='zoxide add'
+alias zq='zoxide query'
+alias zqi='zoxide query -i'
+alias zr='zoxide remove'
+
+zri() {
+    _zoxide_result="$(zoxide query -i -- "$@")" && zoxide remove "$_zoxide_result"
+}
+
+_zoxide_hook() {
+    if [ -z "${_ZO_PWD}" ]; then
+        _ZO_PWD="${PWD}"
+    elif [ "${_ZO_PWD}" != "${PWD}" ]; then
+        _ZO_PWD="${PWD}"
+        zoxide add "$(pwd -L)"
+    fi
+}
+
+case "$PROMPT_COMMAND" in
+    *_zoxide_hook*) ;;
+    *) PROMPT_COMMAND="_zoxide_hook${PROMPT_COMMAND:+;${PROMPT_COMMAND}}" ;;
+esac
+eval "$(zoxide init bash)"
+alias  cd='z'
+
+# FZF = fuzzy is a better find
 export FZF_DEFAULT_OPTS="--height=40% --layout=reverse --info=inline --preview 'batcat {}' --border --margin=1 --padding=1"
+export FZF_CTRL_T_OPTS="--preview 'batcat -n --color=always --line-range :500 {}'"
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+
+cd_with_fzf() {
+    cd $HOME && cd "$(find . -type d | fzf --preview="tree -L 1 {}" --bind="space:toggle-preview" --preview-window=:hidden)"
+}
+
+open_with_fzf() {
+    find -H -type f | fzf -m --preview="batcat -n --color=always --line-range :500 {}" | xargs -ro -d "\n" xdg-open 2>&-
+}
+
+emacs_with_fzf() {
+    ec "$(find -H -type f | fzf -m --preview="batcat -n --color=always --line-range :500 {}" --bind="space:toggle-preview" --preview-window=:hidden)"
+    }
+    #fd -H -i -t f | fzf -m --preview="bat -n --color=always --line-range :500 {}" --bind="space:toggle-preview" --preview-window=":hidden" | xargs -ro -d ec 2>&-
+    #find -H -type f | fzf -m --preview="bat -n --color=always --line-range :500 {}" --bind="space:toggle-preview" --preview-window=":hidden" | xargs -ro -d "\n" ec 2>&-
+    #}
+
+bind '"\C-f":"cd_with_fzf\n"' # binding for cd
+bind '"\C-o":"open_with_fzf\n"' # binding for open
+bind '"\C-e":"emacs_with_fzf\n"' # binding for open
+alias fz='fzf -m --preview "batcatq -n --color=always --line-range :500 {}" --bind="space:toggle-preview" --preview-window=:hidden'
+
+# fd is a better 
+alias fd='fdfind'
+
+# Yazi
+export PATH=/home/$(whoami)/yazi:$PATH
+alias y="yazi"
 
 # Weather
 alias weather='curl wttr.in/chelmsford'
 
-#Zoxide
-eval "$(zoxide init bash)"
-alias  cd='z'
+# A better man
+alias man='tldr'

@@ -77,13 +77,12 @@ if [[ ! -d "$fonts_dir" ]]; then
 fi
 for font in "${fonts[@]}"; do
     zip_file="${font}.zip"
-    # download_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${version}/${zip_file}"
+    download_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${version}/${zip_file}"
     echo "Installing $zip_file"
-    #wget "$download_url"
+    wget "$download_url"
     unzip "$zip_file" -d "$fonts_dir"
-    #rm "$zip_file"
+    rm "$zip_file"
 done
-
 
 find "$fonts_dir" -name '*Windows Compatible*' -delete
 fc-cache -fv
