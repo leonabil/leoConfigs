@@ -101,7 +101,9 @@ codeDir=/home/leonabil/Code
 
 # Aliases
 alias sshifms='sshpass -p "4BR3T3s3s4m0XXM" ssh nabil@ifms'
-alias sshttcp='sshpass -p "ttcp" ssh ttcp@ttcpd'
+alias sshbae='sshpass -p "4BR3T3s3s4m0XXM" ssh baettcpd'
+alias sshttcpd='sshpass -p "ttcp" ssh ttcp@ttcpd'
+alias sshttcp18='sshpass -p "ttcp" ssh ttcp@ttcp18'
 alias cat='batcat --theme=Dracula'
 alias em='emacs &'
 alias ec='emacsclient'

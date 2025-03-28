@@ -41,7 +41,7 @@
 (tool-bar-mode -1)
 (tooltip-mode -1)
 (scroll-bar-mode -1)
-;;(global-display-line-numbers-mode)
+(global-display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (setq display-line-numbers-type 'relative)
 
@@ -348,4 +348,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "AnonymicePro Nerd Font Mono" :foundry "nil" :slant normal :weight medium :height 160 :width normal)))))
+ '(default ((t (:family "AnonymicePro Nerd Font Mono" :foundry "nil" :slant normal :weight medium :height 70 :width normal)))))
