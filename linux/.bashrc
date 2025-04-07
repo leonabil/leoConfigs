@@ -96,11 +96,12 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 
 ## Dir Definition
 proDir=/home/leonabil/Documents
-rlasDir=/home/leonabil/Code/RLAS
+rlasDir=/home/leonabil/Code/RLAS51
 codeDir=/home/leonabil/Code
 
 # Aliases
 alias sshifms='sshpass -p "4BR3T3s3s4m0XXM" ssh nabil@ifms'
+alias sshifms='sshpass -p "4BR3T3s3s4m0XXM" ssh nabil@xmm1'
 alias sshbae='sshpass -p "4BR3T3s3s4m0XXM" ssh baettcpd'
 alias sshttcpd='sshpass -p "ttcp" ssh ttcp@ttcpd'
 alias sshttcp18='sshpass -p "ttcp" ssh ttcp@ttcp18'
